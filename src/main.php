@@ -1,8 +1,12 @@
 <?php
 
-require_once(__DIR__ . '/Settings.php');
+# Must include autoloader before settings so we can load our driver.
 require_once(__DIR__ . '/vendor/autoload.php');
-$autoloader = new \iRAP\Autoloader\Autoloader(array(__DIR__));
+new iRAP\Autoloader\Autoloader([__DIR__]);
+
+# Include the settings, which specified which DNS driver we are using (digital ocean, route53, etc).
+require_once(__DIR__ . '/Settings.php');
+
 
 if (!isset($argv[1]))
 {
@@ -17,38 +21,37 @@ else
 $FQDN = strtolower($FQDN); // Caps would likely just mess everything up and not needed.
 
 
-
 function getDnsTxtValueForDomain(string $domain) : string
 {
     $cmd = ACMEPHP_COMMAND . " authorize --solver dns {$domain}";
     $output = shell_exec($cmd);
     $lines = explode(PHP_EOL, $output);
 
+    if (strpos($lines[0], 'Could not open input file') !== false)
+    {
+        die("You have not correctly configured your ACMEPHP_COMMAND setting. Please check the path." . PHP_EOL);
+    }
+
     foreach ($lines as $line)
     {
-        if (strpos($line, 'TXT value') !== false) 
+        if (strpos($line, 'TXT value') !== false)
         {
             $txtValueLine = trim($line);
             $txtValue = str_replace("TXT value:", "", $txtValueLine);
             $txtValue = trim($txtValue);
         }
     }
-    
+
     return $txtValue;
 }
 
 
 $txtValue = getDnsTxtValueForDomain($FQDN);
 $recordHostname = "_acme-challenge." . $FQDN;
-        
-//print "TXT value: " . $txtValue . PHP_EOL;
-//print "Record Hostname: " . $recordHostname . PHP_EOL;
-
 
 /* @var $driver AcmeDnsDriverInterface */
 $driver = Settings::getDnsDriver();
 $driver->addTxtRecord($recordHostname, $txtValue);
-
 
 print "Waiting for DNS propagation. This may take a while depending on your DNS provider..." . PHP_EOL;
 $hostCheckCommand = "/usr/bin/host -t TXT " . $recordHostname;
@@ -56,13 +59,13 @@ $hostCheckCommand = "/usr/bin/host -t TXT " . $recordHostname;
 while (true)
 {
     $output = shell_exec($hostCheckCommand);
-    
+
     if (strpos($output, $txtValue) !== FALSE)
     {
         print "found record! " . $output . PHP_EOL;
         break;
     }
-    
+
     sleep(1);
 }
 
@@ -73,17 +76,17 @@ $checkCommand = ACMEPHP_COMMAND . " check -s dns {$FQDN}";
 while (true)
 {
     $output = shell_exec($checkCommand);
-    
+
     if (strpos($output, "The authorization check was successful!") !== FALSE)
     {
         print "found record! " . $output . PHP_EOL;
         break;
     }
-    
+
     sleep(3);
 }
 
-# finally, make the request for the certificates.        
+# finally, make the request for the certificates.
 $requestCommand = ACMEPHP_COMMAND . " request {$FQDN}";
 $output = shell_exec($requestCommand);
 
