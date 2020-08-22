@@ -102,19 +102,18 @@ mkdir("{$FQDN}/nginx");
 mkdir("{$FQDN}/apache");
 
 $certsPath = getenv('HOME') . '/.acmephp/master/certs/' . $FQDN;
-$privateKeyPath = getenv('HOME') . '/.acmephp/master/private/' . $FQDN;
 
-$chainfile = $certsPath . '/chain.pem';
-$nginxCombinedFile = $certsPath . '/fullchain.pem';
-$siteCert = $certsPath . '/cert.pem';
-$privateKey = $privateKeyPath . '/private.pem';
+$chainfile = $certsPath . '/public/chain.pem';
+$nginxCombinedFile = $certsPath . '/public/fullchain.pem';
+$siteCert = $certsPath . '/public/cert.pem';
+$privateKey = $certsPath . '/private/key.private.pem';
 
 copy($chainfile, "{$FQDN}/apache/ca_bundle.crt");
 copy($siteCert, "{$FQDN}/apache/{$FQDN}.crt");
-copy($privateKey, "{$FQDN}/apache/{$FQDN}.key");
+copy($privateKey, "{$FQDN}/apache/{$FQDN}.private.pem");
 
 copy($nginxCombinedFile, "{$FQDN}/nginx/{$FQDN}.crt");
-copy($privateKey, "{$FQDN}/nginx/{$FQDN}.key");
+copy($privateKey, "{$FQDN}/nginx/{$FQDN}.private.pem");
 
 
 
