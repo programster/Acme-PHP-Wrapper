@@ -11,7 +11,7 @@ This does it through interfacing with your DNS provider in order to create the n
 * [Install composer](https://blog.programster.org/ubuntu-install-composer) if you haven't got it already.
 * [Install ACME PHP](https://blog.programster.org/acme-php-installation) to your machine.
 * Use the tool to [register](https://blog.programster.org/acme-php-registration) (you only have to do this once).
-* Clone this repository: `git clone https://github.com/iRAP-software/SSL-generator.git`
+* Clone this repository: `git clone https://github.com:programster/SSL-generator.git`
 * Go into the `/src` folder.
 * Run `composer install` to install the necessary packages.
 * Fill in the `Settings.php.tmpl` file.
