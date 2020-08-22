@@ -1,6 +1,8 @@
 {
     "require": {
         "irap/autoloader": "^1.0",
+        "toin0u/digitalocean-v2": "^3.0",
+        "guzzlehttp/guzzle": "^6.2.1",
         "irap/route53-wrapper": "^0.1.0"
     }
 }
