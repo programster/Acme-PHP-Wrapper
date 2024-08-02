@@ -1,5 +1,5 @@
-SSL Generator
-=============
+Acme PHP Wrapper
+================
 
 This tool wraps around [ACME PHP](https://acmephp.github.io/) in order to automagically generate SSL certificates.
 This does it through interfacing with your DNS provider in order to create the necessary TXT record.
